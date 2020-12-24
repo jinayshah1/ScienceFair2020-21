@@ -39,7 +39,6 @@ public class DailyTotals {
 	    	//Anything that is not the very first line
 	    	if(counter>1) {
 	    		//When a county already in countyrecentcases shows up
-	    		
 	    		if(countyrecentcases.get(arr[3]) != null) {
 		    		prevcase = Integer.parseInt(countyrecentcases.get(arr[3]));
 			    	curcase = Integer.parseInt(arr[4]);
