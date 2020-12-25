@@ -18,7 +18,7 @@ public class TransmissionRate {
 		 * Use ArrayList and CaseLine object to store this information for future reference - done
 		 *  
 		 * Create a list of dates after which covid cases will go up, maintain as a string in the same format as stored in 
-		 * the hashmaps, a string 
+		 * the ArrayList, a string 
 		 * 
 		 *  Create a separate method that will look for spikes in cases somehow, more detail on this later, just get the
 		 *  rest of the framework up and running first before this
