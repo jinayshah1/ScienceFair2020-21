@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TransmissionRate {
 	public static void main(String[] args) throws IOException {
@@ -32,22 +33,22 @@ public class TransmissionRate {
 	    BufferedReader reader = Files.newBufferedReader(path);
 	    String line = null;
 	    int counter = 0;
-	    ArrayList <CaseLine> list = new ArrayList <CaseLine>();
-	    BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-transmissionrate.csv"));
+	    Map<DateCountyKey, String> searchablecases = new HashMap<>();
 	    
 	    while((line = reader.readLine()) != null) {
 	    	counter++;
 	    	String[] arr = line.split(",");
-	    	CaseLine curLine = new CaseLine(arr[0], arr[3], arr[4]);
-	    	//Anything that is not the very first line
+	    	DateCountyKey curLine = new DateCountyKey(arr[0], arr[3]);
 	    	if(counter>1) {
-	    		list.add(curLine);
+	    		searchablecases.put(curLine, arr[4]);
 	    	}
 	    }
+	    spike(searchablecases);
 	    
 	}
 	
-	public static void spike() throws IOException{
+	public static void spike(Map<DateCountyKey, String> data) throws IOException{
+		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-transmissionrate.csv"));
 		
 	}
 	
