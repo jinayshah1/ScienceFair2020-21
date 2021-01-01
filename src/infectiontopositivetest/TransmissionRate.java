@@ -35,6 +35,8 @@ public class TransmissionRate {
 	    int counter = 0;
 	    Map<DateCountyKey, String> searchablecases = new HashMap<>();
 	    
+	    
+	    
 	    while((line = reader.readLine()) != null) {
 	    	counter++;
 	    	String[] arr = line.split(",");
