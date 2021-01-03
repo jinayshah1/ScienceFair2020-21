@@ -75,7 +75,7 @@ public class TransmissionRate {
 		String cases = "";
 		DateCountyKey findCases = new DateCountyKey(month, day, year, countyCode);
 		cases = data.get(findCases);
-		return cases;
+		return cases; 
 	}
 	
 }
