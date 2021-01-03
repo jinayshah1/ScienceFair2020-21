@@ -35,12 +35,12 @@ public class TransmissionRate {
 	    int counter = 0;
 	    Map<DateCountyKey, String> searchablecases = new HashMap<>();
 	    
-	    
-	    
 	    while((line = reader.readLine()) != null) {
 	    	counter++;
 	    	String[] arr = line.split(",");
-	    	DateCountyKey curLine = new DateCountyKey(arr[0], arr[3]);
+	    	String[] arr1 = arr[0].split("/");
+	    	
+	    	DateCountyKey curLine = new DateCountyKey(arr1[0], arr1[1], arr1[2], arr[3]);
 	    	if(counter>1) {
 	    		searchablecases.put(curLine, arr[4]);
 	    	}
@@ -51,7 +51,31 @@ public class TransmissionRate {
 	
 	public static void spike(Map<DateCountyKey, String> data) throws IOException{
 		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-transmissionrate.csv"));
-		
+		Path path = Paths.get("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-daily.csv");
+	    BufferedReader reader = Files.newBufferedReader(path);
+		Path path1 = Paths.get("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\reference-dates.csv");
+	    BufferedReader reader1 = Files.newBufferedReader(path1);
+	    String date = null;
+	    String cases = null;
+	    String countyInfo = null;
+	    
+	    while ((date=reader1.readLine()) != null) {
+	    	String[] arr = date.split(",");
+	    	while((countyInfo=reader.readLine()) != null) {
+	    		String[] arr1 = countyInfo.split(",");
+	    		Map<String, String> casesAfterDate = new HashMap<>();
+	    		cases = getCases(arr[1], arr[2], arr[3], arr1[3], data);
+	    		
+	    		
+	    	}
+	    }
+	}
+	
+	public static String getCases(String month, String day, String year, String countyCode,Map<DateCountyKey, String> data) {
+		String cases = "";
+		DateCountyKey findCases = new DateCountyKey(month, day, year, countyCode);
+		cases = data.get(findCases);
+		return cases; 
 	}
 	
 }
