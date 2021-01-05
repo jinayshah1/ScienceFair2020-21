@@ -69,7 +69,7 @@ public class TransmissionRate {
 	    
 	    while ((date=reader1.readLine()) != null) {
 	    	String[] arrSplit = date.split(",");
-	    	int[]arr;
+	    	int[]arr = null;
 	    	for(int i = 0; i < arr.length; i++) {
 	    		int convert = Integer.parseInt(arrSplit[i]);
 	    		arr[i] = convert;
@@ -86,8 +86,40 @@ public class TransmissionRate {
 	    					else if((arr[1] == 1) && (arr[2] <= 3)) {
 	    						//same as above, but subtract to find negative data
 	    					}
-	    					else if() {
-	    						
+	    					else if((arr[1] == 2) && (arr[2] >= 26)) {
+	    						//like first if but with february
+	    					}
+	    					else if((arr[1] == 3) && (arr[2] <= 3)) {
+	    						//like second one
+	    					}
+	    					else if(((arr[1] == 1) || 
+	    							(arr[1] == 3) || 
+	    							(arr[1] == 5) || 
+	    							(arr[1] == 7) || 
+	    							(arr[1] == 8) ||
+	    							(arr[1] == 10) ||
+	    							(arr[1] == 12)) && (arr[2] >= 29)) {
+	    						//for days with 31 months going forward to the next month
+	    					}
+	    					else if(((arr[1] == 2) || 
+	    							(arr[1] == 4) || 
+	    							(arr[1] == 6) || 
+	    							(arr[1] == 8) || 
+	    							(arr[1] == 9) ||
+	    							(arr[1] == 11) && (arr[2] <= 3))) {
+	    						//for days in the beginning of months before months with 31 days
+	    					}
+	    					else if(((arr[1] == 4) || 
+	    							(arr[1] == 6) || 
+	    							(arr[1] == 9) || 
+	    							(arr[1] == 11) && (arr[2] >= 29))) {
+	    						//for days with 30 days, looking forward to the next month
+	    					}
+	    					else if(((arr[1] == 5) || 
+	    							(arr[1] == 7) || 
+	    							(arr[1] == 10) || 
+	    							(arr[1] == 12) && (arr[2] <= 3))) {
+	    						//for days in the beginning of months before months with 30 days
 	    					}
 	    					else {
 	    						//normal, just add and subtract from the date
@@ -95,7 +127,7 @@ public class TransmissionRate {
 	    				}
 	    				else {
 	    					cases = getCases(arr[1], arr[2], arr[3], arr1[3], data);
-	    					casesForStat.put(String.join(",", arr), cases);
+	    					casesForStat.put(makeDate(arr[1], arr[2], arr[3]), cases);
 	    				}
 	    			}
 	    		}
@@ -105,10 +137,15 @@ public class TransmissionRate {
 	}
 	
 	public static String getCases(int month, int day, int year, String countyCode,Map<DateCountyKey, String> data) {
-		String cases = "";
 		DateCountyKey findCases = new DateCountyKey(month, day, year, countyCode);
-		cases = data.get(findCases);
-		return cases; 
+		return data.get(findCases); 
+	}
+	
+	public static String makeDate(int month, int day, int year) {
+		String smonth = String.valueOf(month);
+		String sday = String.valueOf(day);
+		String syear = String.valueOf(year);
+		return smonth + "," + sday + "," + syear;
 	}
 	
 }
