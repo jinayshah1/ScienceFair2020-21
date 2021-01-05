@@ -40,7 +40,13 @@ public class TransmissionRate {
 	    	String[] arr = line.split(",");
 	    	String[] arr1 = arr[0].split("/");
 	    	
-	    	DateCountyKey curLine = new DateCountyKey(arr1[0], arr1[1], arr1[2], arr[3]);
+	    	int[]arrHash = null;
+	    	for(int i = 0; i < arr.length; i++) {
+	    		int hold = Integer.parseInt(arr1[i]);
+	    		arrHash[i] = hold;
+	    	}
+	    	//////////////////////////////// CHECK ABOVE AND BELOW LOGIC//////////////////////////////////////////////
+	    	DateCountyKey curLine = new DateCountyKey(arrHash[0], arrHash[1], arrHash[2], arr[3]);
 	    	if(counter>1) {
 	    		searchablecases.put(curLine, arr[4]);
 	    	}
@@ -58,20 +64,47 @@ public class TransmissionRate {
 	    String date = null;
 	    String cases = null;
 	    String countyInfo = null;
+	    String posCase = null;
+	    String negCase = null;
 	    
 	    while ((date=reader1.readLine()) != null) {
-	    	String[] arr = date.split(",");
+	    	String[] arrSplit = date.split(",");
+	    	int[]arr;
+	    	for(int i = 0; i < arr.length; i++) {
+	    		int convert = Integer.parseInt(arrSplit[i]);
+	    		arr[i] = convert;
+	    	}
 	    	while((countyInfo=reader.readLine()) != null) {
 	    		String[] arr1 = countyInfo.split(",");
-	    		Map<String, String> casesAfterDate = new HashMap<>();
-	    		cases = getCases(arr[1], arr[2], arr[3], arr1[3], data);
-	    		
+	    		Map<String, String> casesForStat = new HashMap<>();
+	    		for(int i = 0; i < 18; i++) {
+	    			for(int j = 0; j < 3; j++) {
+	    				if(j!=0) {
+	    					if((arr[1] == 12) && arr[2] >= 29) {
+	    						//add one to the year after it turns to the next year, and make month 1
+	    					}
+	    					else if((arr[1] == 1) && (arr[2] <= 3)) {
+	    						//same as above, but subtract to find negative data
+	    					}
+	    					else if() {
+	    						
+	    					}
+	    					else {
+	    						//normal, just add and subtract from the date
+	    					}
+	    				}
+	    				else {
+	    					cases = getCases(arr[1], arr[2], arr[3], arr1[3], data);
+	    					casesForStat.put(String.join(",", arr), cases);
+	    				}
+	    			}
+	    		}
 	    		
 	    	}
 	    }
 	}
 	
-	public static String getCases(String month, String day, String year, String countyCode,Map<DateCountyKey, String> data) {
+	public static String getCases(int month, int day, int year, String countyCode,Map<DateCountyKey, String> data) {
 		String cases = "";
 		DateCountyKey findCases = new DateCountyKey(month, day, year, countyCode);
 		cases = data.get(findCases);

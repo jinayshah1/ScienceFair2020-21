@@ -1,12 +1,12 @@
 package infectiontopositivetest;
 
 public class DateCountyKey {
-	String caseMonth;
-	String caseDay;
-	String caseYear;
+	int caseMonth;
+	int caseDay;
+	int caseYear;
 	String countyCode;
 
-	public DateCountyKey(String caseMonth, String caseDay, String caseYear, String countyCode) {
+	public DateCountyKey(int caseMonth, int caseDay, int caseYear, String countyCode) {
 		this.caseMonth = caseMonth;
 		this.caseDay = caseDay;
 		this.caseYear = caseYear;
@@ -14,10 +14,10 @@ public class DateCountyKey {
 	}
 	
 	public boolean equals(DateCountyKey other) {
-		if (this.caseMonth.equals(other.getCaseMonth()) &&
-			this.caseDay.equals(other.getCaseDay()) &&
-			this.caseYear.equals(other.getCaseYear()) &&
-			this.countyCode.equals(other.getCountyCode())) {
+		if ((this.caseMonth == other.getCaseMonth()) &&
+			(this.caseDay == other.getCaseDay()) &&
+			(this.caseYear == other.getCaseYear()) &&
+			(this.countyCode == other.getCountyCode())) {
 			return true;
 		}
 		return false;
@@ -27,27 +27,27 @@ public class DateCountyKey {
 		return countyCode;
 	}
 
-	public String getCaseMonth() {
+	public int getCaseMonth() {
 		return caseMonth;
 	}
 
-	public void setCaseMonth(String caseMonth) {
+	public void setCaseMonth(int caseMonth) {
 		this.caseMonth = caseMonth;
 	}
 
-	public String getCaseDay() {
+	public int getCaseDay() {
 		return caseDay;
 	}
 
-	public void setCaseDay(String caseDay) {
+	public void setCaseDay(int caseDay) {
 		this.caseDay = caseDay;
 	}
 
-	public String getCaseYear() {
+	public int getCaseYear() {
 		return caseYear;
 	}
 
-	public void setCaseYear(String caseYear) {
+	public void setCaseYear(int caseYear) {
 		this.caseYear = caseYear;
 	}
 
