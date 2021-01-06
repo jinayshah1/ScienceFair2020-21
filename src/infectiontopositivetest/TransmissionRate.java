@@ -66,6 +66,11 @@ public class TransmissionRate {
 	    String countyInfo = null;
 	    String posCase = null;
 	    String negCase = null;
+	    int holder = 0;
+	    //This will make the code find the average "average" days before and after the date of interest
+	    int avg = 3;
+	    // Dates forward that the code will look
+	    int datFor = 18;
 	    
 	    while ((date=reader1.readLine()) != null) {
 	    	String[] arrSplit = date.split(",");
@@ -74,22 +79,24 @@ public class TransmissionRate {
 	    		int convert = Integer.parseInt(arrSplit[i]);
 	    		arr[i] = convert;
 	    	}
+	    	
 	    	while((countyInfo=reader.readLine()) != null) {
 	    		String[] arr1 = countyInfo.split(",");
 	    		Map<String, String> casesForStat = new HashMap<>();
-	    		for(int i = 0; i < 18; i++) {
-	    			for(int j = 0; j < 3; j++) {
+	    		for(int i = 0; i < datFor; i++) {
+	    			for(int j = 0; j < avg; j++) {
 	    				if(j!=0) {
-	    					if((arr[1] == 12) && arr[2] >= 29) {
+	    					if((arr[1] == 12) && arr[2] > 31-avg) {
 	    						//add one to the year after it turns to the next year, and make month 1
+	    						
 	    					}
-	    					else if((arr[1] == 1) && (arr[2] <= 3)) {
+	    					else if((arr[1] == 1) && (arr[2] <= avg)) {
 	    						//same as above, but subtract to find negative data
 	    					}
-	    					else if((arr[1] == 2) && (arr[2] >= 26)) {
-	    						//like first if but with february
+	    					else if((arr[1] == 2) && (arr[2] > 28-avg)) {
+	    						//like first if but with February
 	    					}
-	    					else if((arr[1] == 3) && (arr[2] <= 3)) {
+	    					else if((arr[1] == 3) && (arr[2] <= avg)) {
 	    						//like second one
 	    					}
 	    					else if(((arr[1] == 1) || 
@@ -98,7 +105,7 @@ public class TransmissionRate {
 	    							(arr[1] == 7) || 
 	    							(arr[1] == 8) ||
 	    							(arr[1] == 10) ||
-	    							(arr[1] == 12)) && (arr[2] >= 29)) {
+	    							(arr[1] == 12)) && (arr[2] > 31-avg)) {
 	    						//for days with 31 months going forward to the next month
 	    					}
 	    					else if(((arr[1] == 2) || 
@@ -106,19 +113,19 @@ public class TransmissionRate {
 	    							(arr[1] == 6) || 
 	    							(arr[1] == 8) || 
 	    							(arr[1] == 9) ||
-	    							(arr[1] == 11) && (arr[2] <= 3))) {
+	    							(arr[1] == 11) && (arr[2] <= avg))) {
 	    						//for days in the beginning of months before months with 31 days
 	    					}
 	    					else if(((arr[1] == 4) || 
 	    							(arr[1] == 6) || 
 	    							(arr[1] == 9) || 
-	    							(arr[1] == 11) && (arr[2] >= 29))) {
+	    							(arr[1] == 11) && (arr[2] > 30-avg))) {
 	    						//for days with 30 days, looking forward to the next month
 	    					}
 	    					else if(((arr[1] == 5) || 
 	    							(arr[1] == 7) || 
 	    							(arr[1] == 10) || 
-	    							(arr[1] == 12) && (arr[2] <= 3))) {
+	    							(arr[1] == 12) && (arr[2] <= avg))) {
 	    						//for days in the beginning of months before months with 30 days
 	    					}
 	    					else {
@@ -131,7 +138,6 @@ public class TransmissionRate {
 	    				}
 	    			}
 	    		}
-	    		
 	    	}
 	    }
 	}
