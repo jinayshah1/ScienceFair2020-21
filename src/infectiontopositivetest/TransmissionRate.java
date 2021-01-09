@@ -40,12 +40,11 @@ public class TransmissionRate {
 	    	String[] arr = line.split(",");
 	    	String[] arr1 = arr[0].split("/");
 	    	
-	    	int[]arrHash = null;
+	    	int[]arrHash = new int[arr.length];
 	    	for(int i = 0; i < arr.length; i++) {
 	    		int hold = Integer.parseInt(arr1[i]);
 	    		arrHash[i] = hold;
 	    	}
-	    	//////////////////////////////// CHECK ABOVE AND BELOW LOGIC//////////////////////////////////////////////
 	    	DateCountyKey curLine = new DateCountyKey(arrHash[0], arrHash[1], arrHash[2], arr[3]);
 	    	if(counter>1) {
 	    		searchablecases.put(curLine, arr[4]);
@@ -75,12 +74,12 @@ public class TransmissionRate {
 	    int avg = 3;
 	    // Dates forward that the code will look
 	    int datFor = 18;
+	    Map<String, Map<String, Map<String, String>>> refDatCases = new HashMap<>();
 	    
-	    while ((date=reader1.readLine()) != null) {
-	    	Map<String, Map<String, Map<String, String>>> refDatCases = new HashMap<>();
+	    while ((date=reader1.readLine()) != null) {	    	
 	    	String[] arrSplit = date.split(",");
-	    	int[]arr = null;
-	    	for(int i = 0; i < arr.length; i++) {
+	    	int[]arr = new int[arrSplit.length];
+	    	for(int i = 0; i < arrSplit.length; i++) {
 	    		int convert = Integer.parseInt(arrSplit[i]);
 	    		arr[i] = convert;
 	    	}
@@ -326,7 +325,18 @@ public class TransmissionRate {
 	    		}
 	    	}
 	    }
-	    	    
+	    statistics(refDatCases);	    
+	}
+	//*************//resume work here//*************//
+	public static Map<String, Map<String, DateStatistics>> statistics(Map<String, Map<String, Map<String, String>>> data) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-statistics.csv"));
+		Path path = Paths.get("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-daily.csv");
+	    BufferedReader reader = Files.newBufferedReader(path);
+		Path path1 = Paths.get("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\reference-dates.csv");
+	    BufferedReader reader1 = Files.newBufferedReader(path1);
+	    Map<String /*reference date*/, Map<String /*dates forward from the reference date*/, DateStatistics /*need county, slope, mean absolute deviation for each date(as another hash map)*/ >> temp = new HashMap();
+	    
+	    return null;
 	}
 	
 	public static String getCases(int month, int day, int year, String countyCode,Map<DateCountyKey, String> data) {
