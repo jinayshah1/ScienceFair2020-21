@@ -77,6 +77,7 @@ public class TransmissionRate {
 	    int datFor = 18;
 	    
 	    while ((date=reader1.readLine()) != null) {
+	    	Map<String, Map<String, Map<String, String>>> refDatCases = new HashMap<>();
 	    	String[] arrSplit = date.split(",");
 	    	int[]arr = null;
 	    	for(int i = 0; i < arr.length; i++) {
@@ -91,6 +92,7 @@ public class TransmissionRate {
 	    		Map<String, String> countiesFound = new HashMap<>();
 	    		if(countiesFound.containsKey(arr1[3])) {	    		
 		    		Map<String, String> casesForStat = new HashMap<>();
+		    		Map<String, Map<String, String>> forwardCases = new HashMap<>();
 		    		countiesFound.put(arr1[3], "done");
 		    		for(int i = 0; i < datFor; i++) {
 		    			for(int j = 0; j < avg; j++) {
@@ -140,7 +142,7 @@ public class TransmissionRate {
 		    							negCase = getCases(arr[1], holder, arr[3], arr1[3], data);
 				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), negCase);
 		    							curDay--;
-		    							temp--;
+		    							temp++;
 		    						}
 		    						
 		    					}
@@ -156,20 +158,49 @@ public class TransmissionRate {
 			    						curDay++;
 		    						}
 		    						else {
-		    							curDay = 1;
+		    							curDay = 1+temp;
 		    							holder = curDay;
-		    							posCase = getCases(arr[1]+1, holder, arr[3]+1, arr1[3], data);
-		    	    					casesForStat.put(makeDate(arr[1]+1, holder, arr[3]+1), posCase);
+		    							posCase = getCases(arr[1]+1, holder, arr[3], arr1[3], data);
+		    	    					casesForStat.put(makeDate(arr[1]+1, holder, arr[3]), posCase);
 		    							holder = arr[2] - j;
 		    							negCase = getCases(arr[1], holder, arr[3], arr1[3], data);
 				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), negCase);
 		    							curDay++;
-		    							
+		    							temp++;
 		    						}
 		    					}
 		    					else if((arr[1] == 3) && (arr[2] <= avg)) {
 		    						//like second one
-		    						if(curDay <= avg) {
+		    						if((curDay > 0) && (curDay <= arr[2])) {
+		    							holder = arr[2]+j;
+			    						posCase = getCases(arr[1], holder, arr[3], arr1[3], data);
+				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), posCase);
+			    						holder = arr[2]-j;
+			    						negCase = getCases(arr[1], holder, arr[3], arr1[3], data);
+				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), negCase);
+			    						curDay--;
+		    						}
+		    						else {
+		    							curDay = 28-temp;
+		    							holder = curDay;
+		    							posCase = getCases(2, holder, arr[3], arr1[3], data);
+		    	    					casesForStat.put(makeDate(12, holder, arr[3]), posCase);
+		    							holder = arr[2] + j;
+		    							negCase = getCases(arr[1], holder, arr[3], arr1[3], data);
+				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), negCase);
+		    							curDay--;
+		    							temp++;
+		    							
+		    						}
+		    					}
+		    					else if(((arr[1] == 1) || 
+		    							(arr[1] == 3) || 
+		    							(arr[1] == 5) || 
+		    							(arr[1] == 7) || 
+		    							(arr[1] == 8) ||
+		    							(arr[1] == 10)) && (arr[2] > 31-avg)) {
+		    						//for days with 31 months going forward to the next month
+		    						if((curDay > (31-avg)) && (curDay <= 31)) {
 			    						holder = arr[2]+j;
 			    						posCase = getCases(arr[1], holder, arr[3], arr1[3], data);
 				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), posCase);
@@ -179,25 +210,17 @@ public class TransmissionRate {
 			    						curDay++;
 		    						}
 		    						else {
-		    							curDay = 31;
+		    							curDay = 1+temp;
 		    							holder = curDay;
-		    							posCase = getCases(12, holder, arr[3]-1, arr1[3], data);
-		    	    					casesForStat.put(makeDate(12, holder, arr[3]-1), posCase);
-		    							holder = arr[2] + j;
+		    							posCase = getCases(arr[1]+1, holder, arr[3], arr1[3], data);
+		    	    					casesForStat.put(makeDate(arr[1]+1, holder, arr[3]), posCase);
+		    							holder = arr[2] - j;
 		    							negCase = getCases(arr[1], holder, arr[3], arr1[3], data);
 				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), negCase);
 		    							curDay++;
-		    							
+		    							temp++;
 		    						}
-		    					}
-		    					else if(((arr[1] == 1) || 
-		    							(arr[1] == 3) || 
-		    							(arr[1] == 5) || 
-		    							(arr[1] == 7) || 
-		    							(arr[1] == 8) ||
-		    							(arr[1] == 10) ||
-		    							(arr[1] == 12)) && (arr[2] > 31-avg)) {
-		    						//for days with 31 months going forward to the next month
+		    						
 		    					}
 		    					else if(((arr[1] == 2) || 
 		    							(arr[1] == 4) || 
@@ -206,21 +229,90 @@ public class TransmissionRate {
 		    							(arr[1] == 9) ||
 		    							(arr[1] == 11) && (arr[2] <= avg))) {
 		    						//for days in the beginning of months before months with 31 days
+		    						if((curDay > 0) && (curDay <= arr[2])) {
+		    							holder = arr[2]+j;
+			    						posCase = getCases(arr[1], holder, arr[3], arr1[3], data);
+				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), posCase);
+			    						holder = arr[2]-j;
+			    						negCase = getCases(arr[1], holder, arr[3], arr1[3], data);
+				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), negCase);
+			    						curDay--;
+		    						}
+		    						else {
+		    							curDay = 31-temp;
+		    							holder = curDay;
+		    							posCase = getCases(2, holder, arr[3], arr1[3], data);
+		    	    					casesForStat.put(makeDate(12, holder, arr[3]), posCase);
+		    							holder = arr[2] + j;
+		    							negCase = getCases(arr[1], holder, arr[3], arr1[3], data);
+				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), negCase);
+		    							curDay--;
+		    							temp++;		    							
+		    						}
 		    					}
 		    					else if(((arr[1] == 4) || 
 		    							(arr[1] == 6) || 
 		    							(arr[1] == 9) || 
 		    							(arr[1] == 11) && (arr[2] > 30-avg))) {
 		    						//for days with 30 days, looking forward to the next month
+		    						if((curDay > (30-avg)) && (curDay <= 30)) {
+			    						holder = arr[2]+j;
+			    						posCase = getCases(arr[1], holder, arr[3], arr1[3], data);
+				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), posCase);
+			    						holder = arr[2]-j;
+			    						negCase = getCases(arr[1], holder, arr[3], arr1[3], data);
+				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), negCase);
+			    						curDay++;
+		    						}
+		    						else {
+		    							curDay = 1+temp;
+		    							holder = curDay;
+		    							posCase = getCases(arr[1]+1, holder, arr[3], arr1[3], data);
+		    	    					casesForStat.put(makeDate(arr[1]+1, holder, arr[3]), posCase);
+		    							holder = arr[2] - j;
+		    							negCase = getCases(arr[1], holder, arr[3], arr1[3], data);
+				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), negCase);
+		    							curDay++;
+		    							temp++;
+		    						}
+		    						
 		    					}
 		    					else if(((arr[1] == 5) || 
 		    							(arr[1] == 7) || 
 		    							(arr[1] == 10) || 
 		    							(arr[1] == 12) && (arr[2] <= avg))) {
 		    						//for days in the beginning of months before months with 30 days
+		    						if((curDay > 0) && (curDay <= arr[2])) {
+		    							holder = arr[2]+j;
+			    						posCase = getCases(arr[1], holder, arr[3], arr1[3], data);
+				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), posCase);
+			    						holder = arr[2]-j;
+			    						negCase = getCases(arr[1], holder, arr[3], arr1[3], data);
+				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), negCase);
+			    						curDay--;
+		    						}
+		    						else {
+		    							curDay = 30-temp;
+		    							holder = curDay;
+		    							posCase = getCases(2, holder, arr[3], arr1[3], data);
+		    	    					casesForStat.put(makeDate(12, holder, arr[3]), posCase);
+		    							holder = arr[2] + j;
+		    							negCase = getCases(arr[1], holder, arr[3], arr1[3], data);
+				    					casesForStat.put(makeDate(arr[1], holder, arr[3]), negCase);
+		    							curDay--;
+		    							temp++;
+		    							
+		    						}
 		    					}
 		    					else {
 		    						//normal, just add and subtract from the date
+			    					holder = arr[2]+j;
+			    					posCase = getCases(arr[1], holder, arr[3], arr1[3], data);
+				    				casesForStat.put(makeDate(arr[1], holder, arr[3]), posCase);
+			    					holder = arr[2]-j;
+			    					negCase = getCases(arr[1], holder, arr[3], arr1[3], data);
+				    				casesForStat.put(makeDate(arr[1], holder, arr[3]), negCase);
+			    					curDay++;
 		    					}
 		    				}
 		    				else {
@@ -228,10 +320,13 @@ public class TransmissionRate {
 		    					casesForStat.put(makeDate(arr[1], arr[2], arr[3]), cases);
 		    				}
 		    			}
+		    			forwardCases.put(String.valueOf(i), casesForStat);
 		    		}
+		    		refDatCases.put(makeDate(arr[1], arr[2], arr[3]), forwardCases);
 	    		}
 	    	}
 	    }
+	    	    
 	}
 	
 	public static String getCases(int month, int day, int year, String countyCode,Map<DateCountyKey, String> data) {
