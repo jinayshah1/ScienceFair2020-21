@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TransmissionRate {
@@ -25,7 +27,7 @@ public class TransmissionRate {
 		 *  rest of the framework up and running first before this
 		 *  
 		 *  Once you determine the average transmission time for all of those holidays, average that out, and using a separate 
-		 *  nested hashmap, bind the county name and number to the transmission time, and write this to a .csv file*/
+		 *  nested hashmap, bind the county name and number to the transmission time, and write this to a .csv file */
 		process();
 	}
 	public static void process() throws IOException{
@@ -74,10 +76,12 @@ public class TransmissionRate {
 	    int avg = 3;
 	    // Dates forward that the code will look
 	    int datFor = 18;
-	    Map<String, Map<String, Map<String, String>>> refDatCases = new HashMap<>();
+	    Map<String /*county code*/, Map<String /*reference date*/ , Map<String/*root date that values are being pulled from*/, 
+	    Map<String/*date of case*/, String/*number cases*/>>>> countyRefDatCases = new HashMap<>();
 	    
 	    while ((date=reader1.readLine()) != null) {	    	
 	    	String[] arrSplit = date.split(",");
+	    	Map<String, Map<String, Map<String, String>>> refDatCases = new HashMap<>();
 	    	int[]arr = new int[arrSplit.length];
 	    	for(int i = 0; i < arrSplit.length; i++) {
 	    		int convert = Integer.parseInt(arrSplit[i]);
@@ -89,7 +93,7 @@ public class TransmissionRate {
 	    	while((countyInfo=reader.readLine()) != null) {
 	    		String[] arr1 = countyInfo.split(",");
 	    		Map<String, String> countiesFound = new HashMap<>();
-	    		if(countiesFound.containsKey(arr1[3])) {	    		
+	    		if(!(countiesFound.containsKey(arr1[3]))) {	    		
 		    		Map<String, String> casesForStat = new HashMap<>();
 		    		Map<String, Map<String, String>> forwardCases = new HashMap<>();
 		    		countiesFound.put(arr1[3], "done");
@@ -322,23 +326,124 @@ public class TransmissionRate {
 		    			forwardCases.put(String.valueOf(i), casesForStat);
 		    		}
 		    		refDatCases.put(makeDate(arr[1], arr[2], arr[3]), forwardCases);
+		    		countyRefDatCases.put(arr1[3], refDatCases);
 	    		}
 	    	}
 	    }
-	    statistics(refDatCases);	    
+	    statistics(countyRefDatCases);	    
 	}
-	//*************//resume work here//*************//
-	public static Map<String, Map<String, DateStatistics>> statistics(Map<String, Map<String, Map<String, String>>> data) throws IOException {
-		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-statistics.csv"));
+	
+	
+	public static void /*Map<String, Map<String, Map<String, DateStatistics>>>*/ statistics(Map<String, Map<String, Map<String, Map<String, String>>>> data) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-transmissionrate.csv"));
 		Path path = Paths.get("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-daily.csv");
 	    BufferedReader reader = Files.newBufferedReader(path);
 		Path path1 = Paths.get("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\reference-dates.csv");
 	    BufferedReader reader1 = Files.newBufferedReader(path1);
-	    Map<String /*reference date*/, Map<String /*dates forward from the reference date*/, DateStatistics /*need county, slope, mean absolute deviation for each date(as another hash map)*/ >> temp = new HashMap();
+	    //Map<String /*county code*/, Map<String /*reference date*/, Map<String /*dates forward from the reference date*/, DateStatistics /*need slope, mean absolute deviation for each date(as another hash map)*/ >>> temp = new HashMap<>();	   
+	    String slope = null;
+	    String mad = null;
+	    String var = null;
+	    String sd = null;
+	    Map<Integer, Double> mslope = new HashMap<>();
+	    Map<Integer, Double> mmean = new HashMap<>();
+	    int varSum = 0;
+	    int madSum = 0;
+	    String countyInfo = null;
+	    String refDate = null;
+	    double sum = 0;
+	    double avg = 0;
 	    
-	    return null;
-	}
-	
+		while((countyInfo=reader.readLine()) != null) {
+    		String[] arr1 = countyInfo.split(",");
+    		Map<String, String> countiesFound = new HashMap<>();
+    		Map<String, Map<String, DateStatistics>> refForwardStats = new HashMap<>();
+			Map<String, DateStatistics> statsFromCases = new HashMap<>();
+    		Map<String, Map<String, Map<String, String>>> temp1 = data.get(arr1[3]);
+    		Map<String, Map<String, String>> temp2 = new HashMap<>();
+    		Map<String, String> temp3 = new HashMap<>();
+    		double tranTime = 0;
+    		int counter = 0;
+    		if(!(countiesFound.containsKey(arr1[3]))) {
+    			while((refDate=reader1.readLine()) != null) {    				   				
+    				String[] arr = refDate.split(",");
+    				String refDateS = arr[1] + "," + arr[2] + "," + arr[3];   		
+    				temp2 = temp1.get(refDateS);
+	    			for(int i = 0; i < temp2.size(); i++) {		    				
+	    				temp3 = temp2.get(String.valueOf(i));
+	    				String[] calcArr = new String[temp3.size()];
+	    				Collection<String> list = temp3.values();
+	    				calcArr = list.toArray(calcArr);
+	    				//find average
+	    	    		for(int j = 0; j < calcArr.length; j++) {
+	    	    			sum+=Double.parseDouble(calcArr[j]);
+	    	    		}
+	    	    		avg = sum/calcArr.length;
+	    	    		slope = String.valueOf((Double.parseDouble(calcArr[(calcArr.length)-1]) - Double.parseDouble(calcArr[0]))/(calcArr.length));
+	    	    		//find MAD/variance/standard deviation
+	    	    		for(int k = 0; k < calcArr.length; k++) {
+	    	    			madSum += Math.abs(avg-Double.parseDouble(calcArr[k]));
+	    	    			varSum += Math.pow(avg-Double.parseDouble(calcArr[k]), 2);
+	    	    		}
+	    	    		sum=0;
+	    	    		int temprr = 1;
+	    	    		for(int t = 0; t < calcArr.length; t++) {
+	    	    			sum+=Double.parseDouble(calcArr[t]);
+	    	    			if((t==2) || (t==5) || (t==8)){
+	    	    				mslope.put(temprr, (Double.parseDouble(calcArr[t]) - Double.parseDouble(calcArr[t-2]))/(3));
+	    	    				mmean.put(temprr, sum/3);
+	    	    				sum=0;
+	    	    				temprr++;
+	    	    			}
+	    	    		}
+	    	    		mad = String.valueOf(madSum/calcArr.length);
+	    	    		var = String.valueOf(varSum/calcArr.length);
+	    	    		sd = String.valueOf(Math.sqrt(varSum/calcArr.length));
+	    	    		DateStatistics hold = new DateStatistics(slope, mad, var, sd, i, temp3, mslope, mmean);
+	    	    		statsFromCases.put(String.valueOf(i), hold);
+	    	    	}
+	    			refForwardStats.put(String.valueOf(counter), statsFromCases);
+	    			counter++;
+    			}
+    			double[] tranArr = new double[refForwardStats.size()];
+    			for(int i = 0; i < refForwardStats.size(); i++) {
+    				statsFromCases = refForwardStats.get(String.valueOf(i));   				
+    				double diffTemp = 0;
+    				double prevDiff1 = 0;
+    				double prevDiff2 = 0;
+    				double prevj = 0;
+    				for(int j = 0; j < statsFromCases.size(); j++) {
+    					DateStatistics stats = statsFromCases.get(String.valueOf(j));
+    					Map<Integer, Double> mmeanHash = stats.getMmean();
+    					double onetwodiff = mmeanHash.get(2)-mmeanHash.get(1);
+    					double twothreediff = mmeanHash.get(3)-mmeanHash.get(2);
+    					double locSD = Double.parseDouble(stats.getStandDev());
+    					if((onetwodiff > locSD) && (twothreediff > locSD)) {
+    						if((onetwodiff > prevDiff1) && (twothreediff >= prevDiff2)){
+    							diffTemp = j;
+    							prevDiff1 = onetwodiff;
+    	    					prevDiff2 = twothreediff;
+    	    					prevj = j;
+    						}    	
+    						else if(((onetwodiff > prevDiff1) && (twothreediff < prevDiff2)) || ((onetwodiff < prevDiff1) && (twothreediff > prevDiff2))) {
+    							diffTemp = ((double)j+prevj)/2;
+    							prevDiff1 = onetwodiff;
+    	    					prevDiff2 = twothreediff;
+    	    					prevj = j;
+    						}
+    					}   				
+    				}
+    				tranArr[i] = diffTemp;	
+    			}
+    			double sum2 = 0;
+				for(int j = 0; j < tranArr.length; j++) {
+	    			sum2+=tranArr[j];
+	    		}
+				tranTime = sum2/(double)tranArr.length;
+    			writer.write(arr1[1] + "," + arr1[2] + "," + arr1[3] + "," + tranTime);
+    		}
+	    }
+	}	
 	public static String getCases(int month, int day, int year, String countyCode,Map<DateCountyKey, String> data) {
 		DateCountyKey findCases = new DateCountyKey(month, day, year, countyCode);
 		return data.get(findCases); 
