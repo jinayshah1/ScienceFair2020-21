@@ -2,8 +2,10 @@ package infectiontopositivetest;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,37 +33,58 @@ public class TransmissionRate {
 		process();
 	}
 	public static void process() throws IOException{
-		Path path = Paths.get("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-daily.csv");
-	    BufferedReader reader = Files.newBufferedReader(path);
+		try {
+		FileReader fileReader = new FileReader("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-daily.csv");
+	    BufferedReader reader = new BufferedReader(fileReader);
+	    
 	    String line = null;
 	    int counter = 0;
 	    Map<DateCountyKey, String> searchablecases = new HashMap<>();
 	    
-	    while((line = reader.readLine()) != null) {
-	    	counter++;
-	    	String[] arr = line.split(",");
-	    	String[] arr1 = arr[0].split("/");
-	    	
-	    	int[]arrHash = new int[arr.length];
-	    	for(int i = 0; i < arr.length; i++) {
-	    		int hold = Integer.parseInt(arr1[i]);
-	    		arrHash[i] = hold;
-	    	}
-	    	DateCountyKey curLine = new DateCountyKey(arrHash[0], arrHash[1], arrHash[2], arr[3]);
-	    	if(counter>1) {
+	    while((line = reader.readLine()) != null) {	    	
+	    	if(counter != 0) {
+		    	String[] arr = line.split(",");
+		    	String[] arr1 = arr[0].split("/");
+		    	
+		    	int[]arrHash = new int[3];
+		    	for(int i = 0; i < arrHash.length; i++) {
+		    		int hold = (int)Integer.valueOf(arr1[i]);
+		    		arrHash[i] = hold;
+		    	}
+		    	DateCountyKey curLine = null;
+		    	if(arr[3] == null || arr[3].equals("")) {
+		    		if(arr[1].equals("Unknown"))
+		    			curLine = new DateCountyKey(arrHash[0], arrHash[1], arrHash[2], arr[2]);
+		    		else
+		    			curLine = new DateCountyKey(arrHash[0], arrHash[1], arrHash[2], arr[1]);
+		    	} else {
+		    		curLine = new DateCountyKey(arrHash[0], arrHash[1], arrHash[2], arr[3]);
+		    	}
+		    	
 	    		searchablecases.put(curLine, arr[4]);
+		    	
 	    	}
+	    	counter++;
 	    }
+	    reader.close();
 	    spike(searchablecases);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	    
 	}
 	
 	public static void spike(Map<DateCountyKey, String> data) throws IOException{
 		BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-transmissionrate.csv"));
-		Path path = Paths.get("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-daily.csv");
-	    BufferedReader reader = Files.newBufferedReader(path);
-		Path path1 = Paths.get("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\reference-dates.csv");
-	    BufferedReader reader1 = Files.newBufferedReader(path1);
+		//Path path = Paths.get("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-daily.csv");
+	    //BufferedReader reader = Files.newBufferedReader(path);
+		//Path path1 = Paths.get("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\reference-dates.csv");
+	    //BufferedReader reader1 = Files.newBufferedReader(path1);
+		FileReader fileReader = new FileReader("C:\\Users\\Jinay Shah\\Documents\\NJRSF\\us-counties-daily.csv");
+	    BufferedReader reader = new BufferedReader(fileReader);
+	    FileReader fileReader1 = new FileReader("C:\\\\Users\\\\Jinay Shah\\\\Documents\\\\NJRSF\\\\reference-dates.csv");
+	    BufferedReader reader1 = new BufferedReader(fileReader1);
+		
 	    String date = null;
 	    String cases = null;
 	    String countyInfo = null;
@@ -84,8 +107,13 @@ public class TransmissionRate {
 	    	Map<String, Map<String, Map<String, String>>> refDatCases = new HashMap<>();
 	    	int[]arr = new int[arrSplit.length];
 	    	for(int i = 0; i < arrSplit.length; i++) {
-	    		int convert = Integer.parseInt(arrSplit[i]);
-	    		arr[i] = convert;
+	    		if(i != 0) {
+		    		int convert = Integer.parseInt(arrSplit[i]);
+		    		arr[i] = convert;
+	    		}
+	    		else {
+	    			arr[i] = 0;
+	    		}
 	    	}
 	    	curMonth = arr[1];
 	    	curDay = arr[2];
