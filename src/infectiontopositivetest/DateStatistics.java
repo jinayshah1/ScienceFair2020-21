@@ -8,26 +8,32 @@ public class DateStatistics {
 	String standDev;
 	String var;
 	int datForw;
-	Map<String, String> cases;
+	String[] dates;
+	String[] cases;
 	Map<Integer, Double> mslope;
 	Map<Integer, Double> mmean;
 
-	public DateStatistics(String slope, String meanAbsDev, String var, String standDev, int datForw, Map<String, String> cases, Map<Integer, Double> mslope, Map<Integer, Double> mmean) {
+	public DateStatistics(String slope, String meanAbsDev, String var, String standDev, int datForw, String[] dates, String[] cases, Map<Integer, Double> mslope, Map<Integer, Double> mmean) {
 		this.meanAbsDev = meanAbsDev;
 		this.slope = slope;	
 		this.standDev = standDev;
 		this.var = var;
 		this.datForw = datForw;
+		this.dates = dates;
 		this.cases = cases;
 		this.mslope = mslope;
 		this.mmean = mmean;
 	}
 
-	public Map<String, String> getCases() {
+	public String[] getCases() {
 		return cases;
 	}
+	
+	public String[] getDates() {
+		return dates;
+	}
 
-	public void setCases(Map<String, String> cases) {
+	public void setCases(String[] cases) {
 		this.cases = cases;
 	}
 

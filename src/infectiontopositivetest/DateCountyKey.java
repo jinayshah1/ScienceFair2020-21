@@ -13,14 +13,37 @@ public class DateCountyKey {
 		this.countyCode = countyCode;
 	}
 	
-	public boolean equals(DateCountyKey other) {
-		if ((this.caseMonth == other.getCaseMonth()) &&
-			(this.caseDay == other.getCaseDay()) &&
-			(this.caseYear == other.getCaseYear()) &&
-			(this.countyCode == other.getCountyCode())) {
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
+		if (other == null) {
+			return false;
+		}
+		if (this.getClass() != other.getClass()) {
+			return false;
+		}
+		DateCountyKey otherObj = (DateCountyKey) other;
+ 		if ((this.caseMonth == otherObj.getCaseMonth()) &&
+			(this.caseDay == otherObj.getCaseDay()) &&
+			(this.caseYear == otherObj.getCaseYear()) &&
+			(this.countyCode.equals(otherObj.getCountyCode()))) {
 			return true;
 		}
 		return false;
+	}
+	
+	public int hashCode() {
+		int result = 13;
+		result = result * this.caseMonth;
+		result = result * this.caseDay;
+		result = result * this.caseYear;
+		result = result + (this.countyCode != null ? this.countyCode.hashCode() : 0);
+		return result;
+	}
+	
+	public String toString() {
+		return this.caseMonth+ "/" +this.caseDay+ "/" +this.caseYear+ "," + this.countyCode;		
 	}
 	
 	public String getCountyCode() {
